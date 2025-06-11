@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <cstdlib>
 
 // Function to copy array
 void copyArray(ElemType src[], ElemType dest[], int n) {
@@ -117,14 +118,45 @@ void QuickSort(ElemType A[], int l, int r) { // 快速排序
 }
 
 void SelectSort(ElemType A[], int n) { // 选择排序
-  for (int i = 0; i < n - 1; i++) {    // 共n-1轮
+  for (int i = 0; i < n - 1; i++) {
     int min = i;
-    for (int j = i + 1; j < n; j++) { // 找到最小的元素
+    for (int j = i + 1; j < n; j++) {
       if (A[j] < A[min])
         min = j;
     }
     if (min != i)
-      swap(A[i], A[min]); // i与min位进行交换
+      swap(A[i], A[min]);
+  }
+}
+
+void Merge(ElemType A[], int l, int m, int r) {
+  const static int N = 20;
+  static ElemType *B = (ElemType *)malloc((N + 1) * sizeof(ElemType));
+
+  for (int k = l; k <= r; k++) {
+    B[k] = A[k];
+  }
+
+  int i, j, k;
+  for (i = l, j = m + 1, k = i; i <= m && j <= r; k++) {
+    if (B[i] <= B[j])
+      A[k] = B[i++];
+    else
+      A[k] = B[j++];
+  }
+
+  while (i <= m)
+    A[k++] = B[i++];
+  while (j <= r)
+    A[k++] = B[j++];
+}
+
+void MergeSort(ElemType A[], int l, int r) {
+  if (l < r) {
+    int mid = (l + r) / 2;
+    MergeSort(A, l, mid);
+    MergeSort(A, mid + 1, r);
+    Merge(A, l, mid, r);
   }
 }
 
@@ -367,9 +399,9 @@ void printArray(ElemType A[], int n, const char *sortName) {
 }
 // Function to test all sorting algorithms
 void testAllSorts() {
-  ElemType original[] = {0,     95422, 28902, 59695, 51038,  92653,  22568,
-                         62664, 65812, 85193, 6970,  117181, 108792, 1152,
-                         99284, 97047, 52711, 18498, 57024,  62044};
+  ElemType original[] = {114514, 95422, 28902, 59695, 51038,  92653,  22568,
+                         62664,  65812, 85193, 6970,  117181, 108792, 1152,
+                         99284,  97047, 52711, 18498, 57024,  62044};
   int n = sizeof(original) / sizeof(ElemType) - 1; // 减1因为第一个元素是哨兵
   ElemType testArray[21];                          // 需要额外空间给哨兵
 
@@ -438,6 +470,13 @@ void testAllSorts() {
   }
   SelectSort(zeroBasedArray, n);
   printArray(zeroBasedArray, n, "Select Sort");
+
+  // Test MergeSort (0-based)
+  for (int i = 0; i < n; i++) {
+    zeroBasedArray[i] = original[i + 1];
+  }
+  MergeSort(zeroBasedArray, 0, n - 1);
+  printArray(zeroBasedArray, n, "Merge Sort");
 
   // Test HeapSort (already uses 1-based indexing)
   ElemType heapArray[21]; // size n+1 for heap sort

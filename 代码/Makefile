@@ -1,5 +1,3 @@
-# Makefile for compiling all .cpp files in current directory
-
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -g -O2
@@ -57,6 +55,11 @@ binarytree: $(BINDIR)/BinaryTree
 sort: $(BINDIR)/Sort
 	@echo "Running Sort..."
 	./$(BINDIR)/Sort
+
+search: 
+	rm -r build
+	mkdir build && cd build && cmake .. && make -j16
+	./build/tests/MyTests
 
 # Debug version with sanitizers
 sort-debug: clean
